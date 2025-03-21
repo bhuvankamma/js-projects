@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text To Speech Converter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="hero">
+        <h1>Text To Speech Converter</h1>
+        <textarea placeholder="Write Anything here...."></textarea>
+        <div class="row">
+            <select></select>
+            <button><img src="play.jpg" alt="play"> Listen</button>
+        </div>
+    </div>
+    
+    <script>
+        let speech = new SpeechSynthesisUtterance();
+        let voices = [];
+        let voiceSelect = document.querySelector("select");
+
+        function loadVoices() {
+            voices = window.speechSynthesis.getVoices();
+            speech.voice = voices[0]; // Default voice
+            voiceSelect.innerHTML = ''; // Clear existing options first
+            voices.forEach((voice, i) => {
+                const option = new Option(voice.name, i);
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        // Ensure voices are loaded
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        } else {
+            loadVoices(); // Fallback in case the event isn't supported
+        }
+
+        voiceSelect.addEventListener("change", () => {
+            speech.voice = voices[parseInt(voiceSelect.value, 10)]; // Ensure proper integer index
+        });
+
+        document.querySelector("button").addEventListener("click", () => {
+            speech.text = document.querySelector("textarea").value;
+            if (speech.text.trim() !== "") { // Only speak if there is text
+                window.speechSynthesis.speak(speech);
+            } else {
+                alert("Please enter some text to speak.");
+            }
+        });
+
+    </script>
+</body>
+</html>
